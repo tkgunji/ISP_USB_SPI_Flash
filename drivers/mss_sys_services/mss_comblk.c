@@ -3,8 +3,8 @@
  *
  * SmartFusion2 COMBLK access functions.
  *
- * SVN $Revision: 6082 $
- * SVN $Date: 2014-01-10 12:59:46 +0000 (Fri, 10 Jan 2014) $
+ * SVN $Revision: 6389 $
+ * SVN $Date: 2014-05-08 12:51:35 +0530 (Thu, 08 May 2014) $
  */
 
 #include "mss_comblk.h"
@@ -519,29 +519,34 @@ static void handle_rx_okay_irq(void)
 {
     uint16_t data16;
     uint16_t is_command;
+    uint8_t data8;
     
     data16 = (uint16_t)COMBLK->DATA8;
     is_command = data16 & DATA8_COMMAND_MASK;
-    
+    data8 = (uint8_t)data16;
+            
     switch(g_comblk_state)
     {
         /*----------------------------------------------------------------------
-         * MSS_COMBLK_init() enables the RCV_OKAY interrupt for the COMBLK_IDLE
-         * state to receive the asynchronous power-on-reset from the system
-         * controller.
-         */
+        * MSS_COMBLK_init() enables the RCV_OKAY interrupt for the COMBLK_IDLE
+        * state to receive the asynchronous power-on-reset from the system
+        * controller.
+        */
         case COMBLK_IDLE:
             if(is_command)
             {
-                g_comblk_p_response[g_comblk_response_idx] = (uint8_t)data16;
-                g_comblk_response_idx++;
-                g_comblk_p_response[g_comblk_response_idx] = 0x00u;
-                if((uint8_t)data16 != POR_DIGEST_ERROR_OPCODE)
+                if(data8 != POR_DIGEST_ERROR_OPCODE)
                 {
-                    process_sys_ctrl_command(g_comblk_p_response[g_comblk_response_idx-1]);
+                    uint8_t rxed_opcode;
+                    rxed_opcode = data8;
+                    process_sys_ctrl_command(rxed_opcode);
                 }
                 else
-                {
+                {  
+                    g_comblk_response_idx = 0;
+                    g_comblk_p_response[g_comblk_response_idx] = data8;
+                    g_comblk_response_idx++;
+                    g_comblk_p_response[g_comblk_response_idx] = 0x00u;                
                     g_comblk_state = COMBLK_RX_RESPONSE;
                 }
             }
@@ -555,7 +560,7 @@ static void handle_rx_okay_irq(void)
             if(is_command)
             {
                 uint8_t rxed_opcode;
-                rxed_opcode = (uint8_t)data16;
+                rxed_opcode = data8;
                 if(rxed_opcode == g_comblk_cmd_opcode)
                 {
                     g_comblk_response_idx = 0u;
@@ -574,14 +579,14 @@ static void handle_rx_okay_irq(void)
             if(is_command)
             {
                 uint8_t rxed_opcode;
-                rxed_opcode = (uint8_t)data16;
+                rxed_opcode = data8;
                 process_sys_ctrl_command(rxed_opcode);
             }
             else
             {
                 if( g_comblk_p_response[g_comblk_response_idx-1] == POR_DIGEST_ERROR_OPCODE)
                 {
-                    g_comblk_p_response[g_comblk_response_idx] = (uint8_t)data16;
+                    g_comblk_p_response[g_comblk_response_idx] = data8;
                     process_sys_ctrl_command(g_comblk_p_response[g_comblk_response_idx-1]);
                     g_comblk_state = COMBLK_IDLE;
                 }
@@ -591,7 +596,7 @@ static void handle_rx_okay_irq(void)
                     {
                         uint8_t rxed_data;
                         
-                        rxed_data = (uint8_t)data16;
+                        rxed_data = data8;
                         g_comblk_p_response[g_comblk_response_idx] = rxed_data;
                         ++g_comblk_response_idx;
                     }
@@ -606,16 +611,22 @@ static void handle_rx_okay_irq(void)
         break;
             
         /*----------------------------------------------------------------------
-         * The RCV_OKAY interrupt should NOT be enabled for states COMBLK_TX_CMD
-         * and COMBLK_TX_DATA.
+         * The RCV_OKAY interrupt should NOT be enabled for states
+         * COMBLK_IDLE, COMBLK_TX_CMD and COMBLK_TX_DATA.
          */
         case COMBLK_TX_PAGED_DATA:
             /* This is needed because when there is an error, we need to terminate loading the data */
             if(!is_command)
             {
-                g_comblk_p_response[1] = (uint8_t)data16;
+                g_comblk_p_response[1] = data8;
                 complete_request(2u);
                 g_comblk_state = COMBLK_IDLE;
+            }
+            else
+            {
+                uint8_t rxed_opcode;
+                rxed_opcode = data8;
+                process_sys_ctrl_command(rxed_opcode);
             }
         break;
         
@@ -626,7 +637,7 @@ static void handle_rx_okay_irq(void)
             if(is_command)
             {
                 uint8_t rxed_opcode;
-                rxed_opcode = (uint8_t)data16;
+                rxed_opcode = data8;
                 process_sys_ctrl_command(rxed_opcode);
             }
         break;

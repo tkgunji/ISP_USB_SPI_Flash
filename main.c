@@ -45,11 +45,12 @@ static long g_src_image_target_address = 0;
 static uint32_t g_error_flag = 1;
 volatile uint8_t g_isp_operation_busy = 1;
 
-
+/* Function prototypes */
 uint32_t page_read_handler(uint8_t const ** pp_next_page);
 void isp_completion_handler(uint32_t value);
 static uint32_t read_page_from_flash(uint8_t * g_buffer, uint32_t length);
-
+static void sys_services_event_handler(uint8_t opcode, uint8_t response);
+void delay(int n);
 
 
 uint32_t int_to_hex_int(uint32_t value,
@@ -119,7 +120,7 @@ int main()
     	MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t *)"\r\n Correct device IDs \r\n");
 
     /* TEST */
-    MSS_SYS_init(MSS_SYS_NO_EVENT_HANDLER);
+    MSS_SYS_init(sys_services_event_handler);
     MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Authenticate... \n\r ");
     g_isp_operation_busy = 1;
     g_src_image_target_address = 0x410000;
@@ -135,7 +136,7 @@ int main()
     		/*
     		 * Do programming
     		*/
-    		MSS_SYS_init(MSS_SYS_NO_EVENT_HANDLER);
+    		MSS_SYS_init(sys_services_event_handler);
     		g_isp_operation_busy = 1;
     		g_src_image_target_address = 0x410000;
     		MSS_SYS_start_isp(MSS_SYS_PROG_PROGRAM,page_read_handler,isp_completion_handler);
@@ -270,4 +271,55 @@ uint32_t int_to_hex_int
         p_result[nibble_idx] = conv_array[nb_nibbles - nibble_idx - 1];
     }
     return nibble_idx;
+}
+
+/*
+ * System Services event handler
+ * */
+
+static void sys_services_event_handler(uint8_t opcode, uint8_t response)
+{
+   // volatile uint32_t inc;
+
+    if(FLASH_FREEZE_SHUTDOWN_OPCODE == opcode)
+    {
+        /* Delay */
+    	delay(2000);
+
+		/* Re-init flash driver */
+        FLASH_init();
+        FLASH_global_unprotect();
+
+        /* Re-initialize the UART. */
+        MSS_UART_init(&g_mss_uart0,
+                               MSS_UART_115200_BAUD,
+                               MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+        MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Entered Flash*Freeze, UART and Flash drivers are re-initialized \n\r ");
+
+    }
+    else if(FLASH_FREEZE_EXIT_OPCODE == opcode)
+    {
+
+        /* Delay */
+        delay(2000);
+
+        /* Re-initialize the UART. */
+        MSS_UART_init(&g_mss_uart0,
+								   MSS_UART_115200_BAUD,
+								   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+        MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Exit Flash*Freeze, UART driver is re-initialized \n\r ");
+
+    }
+
+}
+
+
+/*============================================================
+* Delay function
+*/
+void delay(int n)
+{
+  while(n>0) {
+    n--;
+  }
 }

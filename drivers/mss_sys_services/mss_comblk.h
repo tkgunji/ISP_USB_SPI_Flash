@@ -3,8 +3,8 @@
  *
  * SmartFusion2 COMBLK access functions.
  *
- * SVN $Revision: 6082 $
- * SVN $Date: 2014-01-10 12:59:46 +0000 (Fri, 10 Jan 2014) $
+ * SVN $Revision: 6348 $
+ * SVN $Date: 2014-04-25 18:44:50 +0530 (Fri, 25 Apr 2014) $
  */
 #ifndef __MSS_COMBLK_H_
 #define __MSS_COMBLK_H_ 1
@@ -16,6 +16,14 @@
 extern "C" {
 #endif
 
+#define TAMPER_ATTEMPT_DETECT_OPCODE_RANGE_MIN           0x80u
+#define TAMPER_ATTEMPT_DETECT_OPCODE_RANGE_MAX           0x8Fu
+#define TAMPER_FAILURE_DETECT_OPCODE_RANGE_MIN           0x90u
+#define TAMPER_FAILURE_DETECT_OPCODE_RANGE_MAX           0x9Fu
+#define TAMPER_CLOCK_MONITOR_ERROR_OPCODE                0xA0u
+#define TAMPER_HARDWARE_MONITOR_ERROR_OPCODE_RANGE_MIN   0xB1u
+#define TAMPER_HARDWARE_MONITOR_ERROR_OPCODE_RANGE_MAX   0xB7u
+  
 /*------------------------------------------------------------------------------
  *
  */
