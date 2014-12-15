@@ -1,0 +1,282 @@
+/*******************************************************************************
+ * (c) Copyright 2008-2013 Microsemi SoC Products Group.  All rights reserved.
+ *
+ * This example project demonstrates communications with an external flash
+ * device.
+ *
+ * Please refer to the file README.txt for further details about this example.
+ *
+ * SVN $Revision: 5510 $
+ * SVN $Date: 2013-03-29 18:29:47 +0000 (Fri, 29 Mar 2013) $
+ */
+#include <stdio.h>
+#include "drivers/mss_pdma/mss_pdma.h"
+#include "drivers/mss_spi/mss_spi.h"
+#include "drivers/at25df641/at25df641.h"
+#include "drivers/mss_uart/mss_uart.h"
+#include "drivers/mss_sys_services/mss_sys_services.h"
+#include "sys_config_mss_clocks.h"
+
+
+#define BUFFER_A_SIZE  256
+#define NB_NIBBLES_IN_INT   8
+#define NOTIFY 100*256
+/* Manufactuer and device IDs for Atmel AT25DF641 SPI Flash. */
+#define FLASH_MANUFACTURER_ID   (uint8_t)0x01
+#define FLASH_DEVICE_ID         (uint8_t)0x20
+
+/* Application Interrupt and Reset Controller */
+
+typedef struct
+{
+	volatile uint32_t AIRCR_Bits;
+} AIRCR_TypeDef;
+
+#define AIRCR_BASE 0xE000ED0C
+#define AIRCR                  ((AIRCR_TypeDef *) AIRCR_BASE)
+#define SYSRESETREQ_MASK ( (uint32_t)0x1u << 2u)
+/*
+ * Static global variables
+ */
+static uint8_t g_flash_wr_buf[BUFFER_A_SIZE];
+static uint8_t g_flash_rd_buf[BUFFER_A_SIZE];
+
+/* ISP globals */
+static long g_src_image_target_address = 0;
+/*static long g_src_image_size = 0; Not need, as size is read from SPI header */
+static uint32_t g_error_flag = 1;
+volatile uint8_t g_isp_operation_busy = 1;
+
+
+uint32_t page_read_handler(uint8_t const ** pp_next_page);
+void isp_completion_handler(uint32_t value);
+static uint32_t read_page_from_flash(uint8_t * g_buffer, uint32_t length);
+static void sys_services_event_handler(uint8_t opcode, uint8_t response);
+void delay(int n);
+
+
+
+uint32_t int_to_hex_int(uint32_t value,
+                        uint8_t * p_result,
+                        uint32_t result_size);
+
+/*==============================================================================
+  Messages displayed over the UART.
+ */
+const uint8_t g_greeting_msg[] =
+"\r\n\r\n\
+**********************************************************************\r\n\
+***************** SmartFusion2 MSS SPI Flash example *****************\r\n\
+**********************************************************************\r\n\
+This example project demonstrates the use of the SmartFusion2 MSS SPI\r\n\
+block.It reads and writes the content of an external SPI flash device\r\n\
+---------------------------------------------------------------------\r\n";
+/***************************************************************************//**
+ * main function.
+ */
+int main()
+{
+    volatile uint32_t errors = 0;
+    uint32_t address = 0;
+    uint16_t loop_count;
+    uint8_t i;
+    uint8_t manufacturer_id = 0;
+    uint8_t device_id = 0;
+
+    /* Disable Watchdog */
+    //SYSREG->WDOG_CR = 0x00000000;
+    MSS_UART_init(&g_mss_uart0,
+                       MSS_UART_115200_BAUD,
+                       MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+    MSS_UART_polled_tx_string(&g_mss_uart0, g_greeting_msg);
+
+    /*--------------------------------------------------------------------------
+     * Initialize the write and read Buffers
+    */
+    for(loop_count = 0; loop_count <(BUFFER_A_SIZE); loop_count++)
+    {
+        g_flash_wr_buf[loop_count] = loop_count;
+        g_flash_rd_buf[loop_count] = 0x00;
+    }
+
+
+    /*--------------------------------------------------------------------------
+     * Flash Driver Initialization
+    */
+    FLASH_init();
+
+    FLASH_global_unprotect();
+
+    //FLASH_erase_4k_block(0);
+
+    /*--------------------------------------------------------------------------
+     * Check SPI Flash part manufacturer and device ID.
+    */
+    FLASH_read_device_id(&manufacturer_id, &device_id);
+
+    if ((manufacturer_id != FLASH_MANUFACTURER_ID) || (device_id != FLASH_DEVICE_ID))
+    {
+       ++errors;
+       MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t *) "\r\n Wrong ID \r\n");
+    }
+    else
+    	MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t *)"\r\n Correct device IDs \r\n");
+
+    /* TEST */
+    		MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Continuing with ISP Programming... \n\r ");
+    		/*
+    		 * Do programming
+    		*/
+    		/*MSS_SYS_init(MSS_SYS_NO_EVENT_HANDLER);*/
+    		MSS_SYS_init(sys_services_event_handler);
+    		g_isp_operation_busy = 1;
+    		g_src_image_target_address = 0x410000;
+    		MSS_SYS_start_isp(MSS_SYS_PROG_PROGRAM,page_read_handler,isp_completion_handler);
+    		while(g_isp_operation_busy){;}
+    		if(!g_isp_operation_busy){
+    			if(g_error_flag == MSS_SYS_SUCCESS){
+    				MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r ISP programming completed successfully \n\r ");
+    				MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Issuing reset \n\r ");
+    				AIRCR->AIRCR_Bits = 0x05FA0004u;
+    				return 0;
+    			}
+    			else{
+    				uint8_t value_text[50];
+    				uint32_t textsize;
+    				textsize = int_to_hex_int(g_error_flag, value_text, 2);
+    				MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r ISP Programming failed with error: ");
+    				MSS_UART_polled_tx(&g_mss_uart0, value_text, textsize);
+    				MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)"\n\r");
+    				return 1;
+    			}
+    		}
+
+
+return 0;
+}
+
+
+void isp_completion_handler(uint32_t value)
+{
+	g_error_flag = value;
+	g_isp_operation_busy = 0;
+}
+
+static uint32_t read_page_from_flash(uint8_t * g_buffer, uint32_t length)
+{
+	uint32_t num_bytes;
+	num_bytes = length;
+
+	FLASH_read(g_src_image_target_address-1, g_buffer, num_bytes);
+	if(g_src_image_target_address%(NOTIFY) == 0)
+				MSS_UART_polled_tx_string(&g_mss_uart0,(const uint8_t*)".");
+	g_src_image_target_address += num_bytes;
+
+	return num_bytes;
+
+}
+
+/* function called by COMM_BLK for input data bit stream*/
+uint32_t page_read_handler
+(
+    uint8_t const ** pp_next_page
+)
+{
+    uint32_t length;
+
+    length = read_page_from_flash(g_flash_rd_buf, BUFFER_A_SIZE);
+    *pp_next_page = g_flash_rd_buf;
+
+    return length;
+}
+
+
+/*------------------------------------------------------------------------------
+  Converts Integer to Hex
+ */
+uint32_t int_to_hex_int
+(
+    uint32_t value,
+    uint8_t * p_result,
+    uint32_t result_size
+)
+{
+    int nibble_idx, nb_nibbles;
+    unsigned char conv_array[NB_NIBBLES_IN_INT];
+    unsigned int uvalue;
+    nibble_idx = 0;
+    uvalue = (unsigned int)value;
+
+    do {
+         int nibble = uvalue & 0x0F;
+         if (nibble < 10)
+         {
+             conv_array[nibble_idx] = nibble + '0';
+         }
+         else
+         {
+             conv_array[nibble_idx] = nibble  - 10 + 'A';
+         }
+         uvalue = (uvalue >> 4);
+         nibble_idx++;
+    } while ((nibble_idx < NB_NIBBLES_IN_INT) && (uvalue > 0));
+
+    nb_nibbles = nibble_idx;
+    for (nibble_idx = 0; (nibble_idx < nb_nibbles) && (nibble_idx < result_size) ;nibble_idx++ )
+    {
+        p_result[nibble_idx] = conv_array[nb_nibbles - nibble_idx - 1];
+    }
+    return nibble_idx;
+}
+
+/*
+ * System Services event handler
+ * */
+ /*
+static void sys_services_event_handler(uint8_t opcode, uint8_t response)
+{
+    volatile uint32_t inc;
+
+    if(FLASH_FREEZE_SHUTDOWN_OPCODE == opcode)
+    {
+        /* Delay */
+    	delay(1000);
+
+		/* Re-init flash driver */
+        FLASH_init();
+        FLASH_global_unprotect();
+
+        /* Re-initialize the UART. */
+        MSS_UART_init(&g_mss_uart0,
+                               MSS_UART_115200_BAUD,
+                               MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+        MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Entered Flash*Freeze, UART and Flash drivers are re-initialized \n\r ");
+
+    }
+    else if(FLASH_FREEZE_EXIT_OPCODE == opcode)
+    {
+
+        /* Delay */
+        delay(1000);
+
+        /* Re-initialize the UART. */
+        MSS_UART_init(&g_mss_uart0,
+								   MSS_UART_115200_BAUD,
+								   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+        MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Exit Flash*Freeze, UART driver is re-initialized \n\r ");
+
+    }
+
+}
+*/
+/*============================================================
+* Delay function
+*/
+/*
+void delay(int n)
+{
+  while(n>0) {
+    n--;
+  }
+}
+*/

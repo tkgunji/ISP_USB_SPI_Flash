@@ -12,7 +12,7 @@
 #include "../../CMSIS/mss_assert.h"
 #include "../../CMSIS/hw_reg_io.h"
 #include "../../CMSIS/system_m2sxxx.h"
-
+#define DELAY_MORE_THAN_10US        5000U
 #ifdef __cplusplus
 extern "C" {
 #endif 
@@ -329,6 +329,15 @@ MSS_UART_polled_tx_string
             }
         }
     }
+
+    volatile uint32_t timeout;
+    timeout = DELAY_MORE_THAN_10US;
+   do
+   {
+	   --timeout;
+   }while ( (timeout != 0U));
+
+
 }
 
 /***************************************************************************//**

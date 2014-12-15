@@ -42,7 +42,7 @@ static void wait_ready( void );
 /*******************************************************************************
  *
  */
-void FLASH_init( void )
+void FLASH_init( uint8_t div )
 {
     /*--------------------------------------------------------------------------
      * Configure SPI.
@@ -54,7 +54,7 @@ void FLASH_init( void )
             &g_mss_spi0,
             MSS_SPI_SLAVE_0,
             MSS_SPI_MODE3,
-            MSS_SPI_PCLK_DIV_32,
+            div, //MSS_SPI_PCLK_DIV_8,
             MSS_SPI_BLOCK_TRANSFER_FRAME_SIZE
         );
 

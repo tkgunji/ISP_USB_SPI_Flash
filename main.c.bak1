@@ -1,0 +1,128 @@
+/*******************************************************************************
+ * (c) Copyright 2012-2013 Microsemi SoC Products Group.  All rights reserved.
+ *
+ * This example project demonstrates the use of the SmartFusion2 In System
+ * Programming (ISP) using USB driver.
+ *
+ * This example uses the USB driver in USB Device mode with MSC class. When
+ * SmartFusion2 is connected to host PC through USB micro-AB connector, it will
+ * appear as a removable mass storage drive. You can drag and drop the
+ * programming file onto this drive which will then be used to program SmartFusion2.
+ * The programming file must be stored on the root directory of this drive.
+ * Multiple programming files can be copied on the drive.
+ *
+ * For more information on how to use this project, please refer README.TXT in
+ * this project's folder.
+ *
+ * SVN $Revision: 5926 $
+ * SVN $Date: 2013-11-04 09:14:40 +0000 (Mon, 04 Nov 2013) $
+ */
+#include "drivers/mss_sys_services/mss_sys_services.h"
+#include "drivers/mss_uart/mss_uart.h"
+//#include "drivers/at25df641/at25df641.h"
+#include "spi_flash_driver/spi_flash.h"
+//#include "flash_drive_app.h"
+
+
+///local routines 
+void init_system(void);
+static void display_greeting(void);
+uint32_t int_to_hex_int(uint32_t value,
+                        uint8_t * p_result,
+                        uint32_t result_size);
+void spi_flash_unprotect(void);
+void spi_flash_read_device_id(void);
+
+////global variables
+mss_uart_instance_t * const gp_my_uart = &g_mss_uart0;
+#define FLASH_MANUFACTURER_ID   (uint8_t)0x01
+#define FLASH_DEVICE_ID         (uint8_t)0x20
+
+
+
+
+
+// main functions 
+
+int main(){
+
+
+  SYSREG->WDOG_CR = 0x0000;        /*Disable Watch-dog*/
+
+  ///uart
+  init_system();
+  display_greeting();
+ 
+  ///flash 
+  spi_flash_init();
+  spi_flash_unprotect();
+  spi_flash_read_device_id();
+
+  while(1){
+  }
+
+}
+  
+
+/// init_system()
+void init_system(){
+  // Initialize and configure UART0. //
+  MSS_UART_init
+    (
+     gp_my_uart, 
+     MSS_UART_115200_BAUD,
+     MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT
+     );
+}
+
+
+/// display greetings
+static void display_greeting(void){
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)"\n\r\n\r**********************************************************************\n\r" );
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)"************ SmartFusion2 In System Programming Example **************\n\r" );
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)"**********************************************************************\n\r" );
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)" This Example project will provide following options to user:  \n\r");
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)" 1. Dump the data from SPI-Flash\n\r");
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)" 2. Send data from SPI-Flash to page_hander \n\r");
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)" 3. Performs Programming activity. \n\r" );
+  MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)"----------------------------------------------------------------------\n\r" );
+}
+
+////
+void spi_flash_unprotect(void){
+  spi_flash_status_t spi_status;
+  spi_status = spi_flash_control_hw(SPI_FLASH_GLOBAL_UNPROTECT,0,NULL);
+  
+  if(spi_status == SPI_FLASH_UNSUCCESS){
+    MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)" **** spi_flash_unprotect failed.\r\n");
+  }
+}
+
+void spi_flash_read_device_id(void){
+  
+  uint8_t manufacturer_id = 0;
+  uint8_t device_id = 0;
+  struct device_Info *ptrDevInfo ;
+
+  spi_flash_status_t spi_status;
+  spi_status = spi_flash_control_hw(SPI_FLASH_READ_DEVICE_ID, 0, ptrDevInfo);
+  if(spi_status == SPI_FLASH_UNSUCCESS){
+    MSS_UART_polled_tx_string(gp_my_uart,(const uint8_t*)" **** spi_flash_read_device_id failed.\r\n");
+    return;
+  }
+  
+  manufacturer_id = ptrDevInfo->manufacturer_id ;
+  device_id = ptrDevInfo->device_id;
+
+  if ((manufacturer_id != FLASH_MANUFACTURER_ID) || (device_id != FLASH_DEVICE_ID)){
+      MSS_UART_polled_tx_string(&g_mss_uart0,(const uint8_t *)"Failed to read FLASH_MANUFACTURER_ID and FLASH_DEVICE_ID\n\r");
+  }else{
+    MSS_UART_polled_tx_string(&g_mss_uart0,(const uint8_t *)"Success to read FLASH_MANUFACTURER_ID and FLASH_DEVICE_ID\n\r ");
+  }
+
+  //  uint8_t read_device_id_cmd = DEVICE_ID_READ;
+  //  uint8_t read_buffer[2];
+  //  MSS_SPI_set_slave_select( &g_mss_spi0, MSS_SPI_SLAVE_0 );
+  //  MSS_SPI_transfer_block( &g_mss_spi0, &read_device_id_cmd, 1, read_buffer, sizeof(read_buffer) );
+  //  MSS_SPI_clear_slave_select( &g_mss_spi0, MSS_SPI_SLAVE_0 );
+}

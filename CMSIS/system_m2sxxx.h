@@ -32,6 +32,7 @@ extern uint32_t g_FrequencyFIC64;   /*!< Clock frequecny of 64-bit FPGA fabric i
  * SERDES controllers.
  */
 void SystemInit(void);
+void DDRInit(void);
 
 /***************************************************************************//**
  * The SystemCoreClockUpdate() is a standard CMSIS function which can be called
@@ -41,6 +42,8 @@ void SystemInit(void);
  * APB busses connecting the peripherals.
  */
 void SystemCoreClockUpdate(void);
+
+void SystemCoreClockHardUpdate(void);
 
 #ifdef __cplusplus
 }

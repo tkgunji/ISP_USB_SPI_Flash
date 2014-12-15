@@ -10,9 +10,11 @@
 #include "mss_comblk.h"
 #include "../../CMSIS/mss_assert.h"
 
+/* LARS */
 #include "../mss_spi/mss_spi.h"
 #include "../at25df641/at25df641.h"
 #include "../mss_uart/mss_uart.h"
+/* To here */
 
 #include <string.h>
 
@@ -219,7 +221,41 @@ static void asynchronous_event_handler(uint8_t event_opcode)
     {
         uint32_t running_on_standby_clock;
         volatile uint32_t timeout;
-        
+
+	//MSS_UART_polled_tx_string(&g_mss_uart1, (uint8_t*)" \n\r FLASH_FREEZE_EXIT_OPCODE \n\r ");        
+
+	
+	  /* system reset */
+	//SYSREG->SOFT_RST_CR &= ~SYSREG_FPGA_SOFTRESET_MASK;
+	/* re-definition of clocks */
+	/*
+	 * Analog voltage = 3.3v. Libero appears to ignore this
+	 * setting and defines this as 2.5v regardless.
+	 * We change it dynamically.
+	 */
+	//SYSREG->MSSDDR_PLL_STATUS_HIGH_CR &= ~(1<<2);
+	
+	/*
+	 * Wait for fabric PLL to lock. MPPL is getting clock from FPGA PLL.
+	 */
+	//while (!(SYSREG->MSSDDR_PLL_STATUS & (1<<0)));
+	
+	/*
+	 * Negate MPLL bypass.
+	 */
+	//SYSREG->MSSDDR_PLL_STATUS_HIGH_CR &= ~(1<<0);
+	
+	/*
+	 * Wait for MPLL to lock.
+	 */
+	//while (!(SYSREG->MSSDDR_PLL_STATUS & (1<<1)));
+	
+	/*
+	 * Drive M3, PCLK0, PCLK1 from stage 2 dividers.
+	 * This is what enables the MPLL.
+	 */
+	//SYSREG->MSSDDR_FACC1_CR &= ~(1<<12);
+
         /*
          * Wait for the System Controller to switch the system's clock
          * from the standby clock to the main clock. This should take place
@@ -235,6 +271,7 @@ static void asynchronous_event_handler(uint8_t event_opcode)
         
         /* Restore the MSS clock dividers to their normal operations value. */
         SYSREG->MSSDDR_FACC1_CR = g_initial_mssddr_facc1_cr;
+
                     
         if(g_event_handler != 0)
         {
@@ -371,6 +408,8 @@ uint8_t MSS_SYS_flash_freeze(uint8_t options)
     uint8_t flash_freeze_req[FLASH_FREEZE_REQUEST_LENGTH];
     uint8_t response[FLASH_FREEZE_SERV_RESP_LENGTH];
 
+    MSS_UART_polled_tx_string(&g_mss_uart1, (uint8_t*)" \n\r MSS_SYS_flash_freeze \n\r ");
+
     /*
      * The Flash Freeze system service is not available on M2S050 rev A and rev B.
      */
@@ -506,6 +545,8 @@ uint8_t MSS_SYS_sha256
 {
     uint8_t response[STANDARD_SERV_RESP_LENGTH];
     uint8_t params[12];
+//Reply
+
     uint8_t status;
     
     params[0] = (uint8_t)((uint32_t)length);
@@ -576,6 +617,8 @@ uint8_t MSS_SYS_key_tree
     
     memcpy(&params[0], p_key, KEYTREE_KEY_LENGTH);
     
+//Reply
+
     params[32] = op_type;
     
     memcpy(&params[33], path, KEYTREE_PATH_LENGTH);
@@ -903,6 +946,9 @@ static uint32_t g_initial_mssddr_facc2_cr = 0x00;
 static uint8_t g_mode = 0;
 static uint8_t wait_for_clock_switch = 1;
 
+#define FLASH_MANUFACTURER_ID   (uint8_t)0xef
+#define FLASH_DEVICE_ID         (uint8_t)0x40
+
 static uint32_t isp_page_read_handler
 (
     uint8_t const ** pp_next_page
@@ -912,7 +958,11 @@ static uint32_t isp_page_read_handler
     uint32_t running_on_standby_clock;
     volatile uint32_t timeout;
     const uint32_t apb_divisors_mask = 0x00000EFCU;
+    uint8_t manufacturer_id = 0;
+    uint8_t device_id = 0;
+
     
+
     if((g_mode !=  MSS_SYS_PROG_AUTHENTICATE) & (wait_for_clock_switch == 1))
     {
         timeout = DELAY_MORE_THAN_10US;
@@ -924,15 +974,27 @@ static uint32_t isp_page_read_handler
         while ((running_on_standby_clock == 0U) && (timeout != 0U));
         wait_for_clock_switch = 0;
         SYSREG->MSSDDR_FACC1_CR &= ~apb_divisors_mask;
-    	/* Lars hack */
-    	FLASH_init();
+    	/* LARS */
+
+	/* Re-initialize the UART. */
+	MSS_UART_init(&g_mss_uart1,
+		      MSS_UART_115200_BAUD,
+		      MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
+	MSS_UART_polled_tx_string(&g_mss_uart1, (uint8_t*)" \n\r Switched clock... reinitialized Flash and UART drivers \n\r ");
+	
+
+    	FLASH_init(5);
         FLASH_global_unprotect();
 
-            /* Re-initialize the UART. */
-            MSS_UART_init(&g_mss_uart0,
-                                   MSS_UART_115200_BAUD,
-                                   MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
-            MSS_UART_polled_tx_string(&g_mss_uart0, (uint8_t*)" \n\r Switched clock... reinitialized Flash and UART drivers \n\r ");
+	FLASH_read_device_id(&manufacturer_id, &device_id);
+	if ((manufacturer_id != FLASH_MANUFACTURER_ID) || (device_id != FLASH_DEVICE_ID)){
+	  MSS_UART_polled_tx_string(&g_mss_uart1, (uint8_t *) "\r\n Wrong ID \r\n");
+	}else{
+	  MSS_UART_polled_tx_string(&g_mss_uart1, (uint8_t *)"\r\n Correct device IDs \r\n");
+	}
+
+
+	/* To here */
     }
 
     
@@ -976,29 +1038,30 @@ void MSS_SYS_start_isp
 )
 {
     uint8_t isp_prog_request[2];
-    
+
+
+
     /*
      * Keep a copy of the initial eNVM configuration used before ISP was
      * initiated. The eNVM configuration will be restored, as part of the ISP
      * completion handler, when ISP completes.
      */
     g_initial_envm_cr = SYSREG->ENVM_CR;
-    
     /* Store the MSS DDR FACC 2 register value so that its can be restored back 
      * when the ISP operation is completed.asynchronous_event_handler. */
     g_initial_mssddr_facc2_cr = SYSREG->MSSDDR_FACC2_CR;
-
     /*
      * Set the eNVM's frequency range to its maximum. This is required to ensure
      * successful eNVM programming on all devices.
      */
     SYSREG->ENVM_CR = (g_initial_envm_cr & ~NVM_FREQRNG_MASK) | NVM_FREQRNG_MAX;
-    
+
     g_mode = mode;
     
     if(mode != MSS_SYS_PROG_AUTHENTICATE)
     {  
-        /* Select output of MUX 0, MUX 1 and MUX 2 during standby */
+
+    	 /* Select output of MUX 0, MUX 1 and MUX 2 during standby */
         SYSREG->MSSDDR_FACC2_CR = SYSREG->MSSDDR_FACC2_CR & ((uint32_t)(FACC_STANDBY_SEL << FACC_STANDBY_SHIFT) & FACC_STANDBY_SEL_MASK);
         
         /* Enable the signal for the 50 MHz RC oscillator */
@@ -1008,23 +1071,28 @@ void MSS_SYS_start_isp
         SYSREG->MSSDDR_FACC2_CR = SYSREG->MSSDDR_FACC2_CR | ((uint32_t)(MSS_1MHZ_EN << MSS_1MHZ_EN_SHIFT) & MSS_1MHZ_EN_MASK);
         
         wait_for_clock_switch = 1;
+
+
+
     }
     
     signal_request_start();
-    
     isp_prog_request[0] = ISP_PROGRAMMING_REQUEST_CMD;
     isp_prog_request[1] = mode;
     
     g_isp_completion_handler = isp_completion_handler;
     
     g_isp_page_read_handler = page_read_handler;
-    
+
     MSS_COMBLK_send_paged_cmd(isp_prog_request,                 /* p_cmd */
                               sizeof(isp_prog_request),         /* cmd_size */
                               g_isp_response,                   /* p_response */
                               ISP_PROG_SERV_RESP_LENGTH,        /* response_size */
                               isp_page_read_handler,            /* page_handler */
                               isp_sys_completion_handler);      /* completion_handler */
+
+
+
 }
 
 
@@ -1630,7 +1698,7 @@ uint8_t MSS_SYS_start_clock_monitor
     
     tamper_control_req[0] = TAMPER_CONTROL_REQUEST_CMD;
     tamper_control_req[1] = 0x01u;
-
+    
     MSS_COMBLK_send_cmd(tamper_control_req,                 /* p_cmd */
                         sizeof(tamper_control_req),         /* cmd_size */
                         0,                                  /* p_data */

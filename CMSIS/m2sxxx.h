@@ -2511,6 +2511,175 @@ typedef struct
 } SERDESIF_TypeDef;
 
 
+  /*____________________________________________________________________________*/
+  /*
+    DDR Parameters taken from u-boot files 
+    Added by TAKU GUNJI
+  */
+  /*
+   * MODE_CR bits
+   */
+#define REG_DDRC_MOBILE                 7
+#define REG_DDRC_SDRAM                  6
+#define REG_DDRC_DATA_BUS_WIDTH         0
+
+  /*
+   * DYN_REFRESH_1_CR bits
+   */
+#define REG_DDRC_T_RFC_MIN              7
+#define REG_DDRC_SELFREF_EN             5
+#define REG_DDRC_REFRESH_TO_X32         0
+  /*
+   * DYN_REFRESH_2_CR bits
+   */
+#define REG_DDRC_T_RFC_NOM_X32          3
+#define REG_DDRC_REFRESH_BURST          0
+
+
+  /*
+   * DYN_POWERDOWN_CR bits
+   */
+#define REG_DDRC_POWERDOWN_EN           1
+
+  /*
+   * CKE_RSTN_CYCLES_1_CR bits
+   */
+#define REG_DDRC_PRE_CKE_X1024          8
+
+  /*
+   * REG_DDRC_POST_CKE_X1024 bits
+   */
+#define REG_DDRC_POST_CKE_X1024         3
+
+  /*
+   * DRAM_BANK_ACT_TIMING_CR bits
+   */
+#define REG_DDRC_T_RCD                  10
+#define REG_DDRC_T_CCD                  7
+#define REG_DDRC_T_RRD                  4
+#define REG_DDRC_T_RP                   0
+
+  /*
+   * DRAM_BANK_TIMING_PARAM_CR bits
+   */
+#define REG_DDRC_T_RC                   6
+
+  /*
+   * DRAM_RD_WR_LATENCY_CR bits
+   */
+#define REG_DDRC_WRITE_LATENCY          5
+#define REG_DDRC_READ_LATENCY           0
+
+  /*
+   * DRAM_MR_TIMING_PARAM_CR bits
+   */
+#define REG_DDRC_T_MRD                  0
+
+  /*
+   * DRAM_RAS_TIMING_CR bits
+   */
+#define REG_DDRC_T_RAS_MAX              5
+#define REG_DDRC_T_RAS_MIN              0
+
+  /*
+   * DRAM_RD_WR_TRNARND_TIME_CR bits
+   */
+#define REG_DDRC_RD2WR                  5
+#define REG_DDRC_WR2RD                  0
+
+  /*
+   * DFI_RDDATA_EN_CR bits
+   */
+#define REG_DDRC_DFI_T_RDDATA_EN        0
+
+  /*
+   * DRAM_RD_WR_PRE_CR bits
+   */
+#define REG_DDRC_WR2PRE                 5
+#define REG_DDRC_RD2PRE                 0
+
+  /*
+   * DRAM_T_PD_CR bits
+   */
+#define REG_DDRC_T_XP                   4
+#define REG_DDRC_T_CKE                  0
+
+  /*
+   * PERF_PARAM_1_CR bits
+   */
+#define REG_DDRC_BURST_RDWR             13
+#define REG_DDRC_PAGECLOSE              0x10
+
+  /*
+   * PERF_PARAM_2_CR bits
+   */
+#define REG_DDRC_BURST_MODE             10
+
+  /*
+   * DDRC_PWR_SAVE_1_CR bits
+   */
+#define REG_DDRC_POWERDOWN_TO_X32_SHIFT         1
+#define REG_DDRC_POST_SELFREF_GAP_X32_SHIFT     6
+
+
+
+  /* hardwired board configurations */
+  /* taken from u-boot (u-boot/board/emcraft/m2s-som/board.c)  */
+  /*
+   * Generate DDR timings depending on the following DDR clock
+   */
+#define CONFIG_SYS_M2S_SYSREF   1600000000
+#define M2S_DDR_MHZ             (CONFIG_SYS_M2S_SYSREF / (1000 * 1000))
+
+  /*
+   * Common conversion macros used for DDR cfg
+   */
+
+#define M2S_CLK_VAL(ns, div)    ((((ns) * M2S_DDR_MHZ) / div))
+#define M2S_CLK_MOD(ns, div)    ((((ns) * M2S_DDR_MHZ) % div))
+#define M2S_CLK_MIN(ns)         (M2S_CLK_MOD(ns,1000) ?                 \
+				 M2S_CLK_VAL(ns,1000) + 1 :             \
+				 M2S_CLK_VAL(ns,1000))
+#define M2S_CLK32_MIN(ns)       (M2S_CLK_MOD(ns,32000) ?                \
+				 M2S_CLK_VAL(ns,32000) + 1 :            \
+				 M2S_CLK_VAL(ns,32000))
+#define M2S_CLK1024_MIN(ns)     (M2S_CLK_MOD(ns,1024000) ?              \
+				 M2S_CLK_VAL(ns,1024000) + 1 :          \
+				 M2S_CLK_VAL(ns,1024000))
+#define M2S_CLK_MAX(ns)         (M2S_CLK_VAL(ns,1000))
+#define M2S_CLK32_MAX(ns)       (M2S_CLK_VAL(ns,32000))
+#define M2S_CLK1024_MAX(ns)     (M2S_CLK_VAL(ns,1024000))
+
+  /*
+   * MT46H32M16LFBF-6 params & timings
+   */
+#define DDR_BL                  8       /* Burst length (value)         */
+#define DDR_MR_BL               3       /* Burst length (power of 2)    */
+#define DDR_BT                  0       /* Burst type int(1)/seq(0)     */
+
+#define DDR_CL                  3       /* CAS (read) latency           */
+#define DDR_WL                  1       /* Write latency                */
+#define DDR_tMRD                2
+#define DDR_tWTR                2
+#define DDR_tXP                 1
+#define DDR_tCKE                1
+
+#define DDR_tRFC                M2S_CLK_MIN(72)
+#define DDR_tREFI               M2S_CLK32_MAX(7800)
+#define DDR_tCKE_pre            M2S_CLK1024_MIN(200000)
+#define DDR_tCKE_post           M2S_CLK1024_MIN(400)
+#define DDR_tRCD                M2S_CLK_MIN(18)
+#define DDR_tRRD                M2S_CLK_MIN(12)
+#define DDR_tRP                 M2S_CLK_MIN(18)
+#define DDR_tRC                 M2S_CLK_MIN(60)
+#define DDR_tRAS_max            M2S_CLK1024_MAX(70000)
+#define DDR_tRAS_min            M2S_CLK_MIN(42)
+#define DDR_tWR                 M2S_CLK_MIN(15)
+  /*
+   * There are no these timings exactly in spec, so take smth
+   */
+#define DDR_tCCD                2       /* 2-reads/writes (bank A to B) */
+
 /*----------------------------------------------------------------------------*/
 /*------------------------------ System Registers ----------------------------*/
 /*----------------------------------------------------------------------------*/

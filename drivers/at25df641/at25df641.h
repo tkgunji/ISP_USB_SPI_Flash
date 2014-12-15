@@ -13,7 +13,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-void FLASH_init( void );
+void FLASH_init( uint8_t div );
 
 void FLASH_read_device_id
 (
