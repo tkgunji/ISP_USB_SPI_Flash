@@ -38,10 +38,14 @@
 /// 410000 - 400000 for linux
 
 #define SPI_WRITE_ADDR_BASE    0x700000
-#define ISP_RESULT_ADDR        0x0
-#define VERSION_NEW_ADDR       0x2
+#define VERSION_NEW_ADDR       0x0
+#define VERSION_OLD_ADDR       0x2
 #define VERSION_SPI_ADDR       0x4
-#define VERSION_OLD_ADDR       0x6
+#define RESULT_AUTHENTICATION  0x10
+#define RESULT_PROGRAMMING     0x12
+#define RESULT_VERIFY          0x14
+
+
 
 #define CMD_DUMP_DATA           0x31u  
 #define CMD_UBOOT_UP           0x32u  
@@ -66,7 +70,6 @@ typedef struct
  */
 static uint8_t g_flash_wr_buf[BUFFER_A_SIZE];
 static uint8_t g_flash_rd_buf[BUFFER_A_SIZE];
-static uint8_t g_result[1];
 
 mss_uart_instance_t * const gp_my_uart = &g_mss_uart1;
 uint8_t action_code = IDLE;
@@ -135,12 +138,12 @@ int main()
     uint8_t design_version_mss[2];
     uint8_t design_version_mss_new[2];
     uint8_t design_version_spi[2];
+    uint8_t previous_prog_results[2];
     uint8_t do_programming = 0;
     uint8_t manual_boot = 0;
+    uint8_t g_result[1];
 
-
-
-    g_result[0] = 0;
+    g_result[0] = 0xf;
 
     SystemInit(); //including DDR Configurations
 
@@ -177,7 +180,7 @@ int main()
     */
 
     MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r Waiting for uart interrupt to do manual boot... \n\r ");
-    MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r (please wait 10 secs in case of auto-boot...\n\r ");
+    MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r (please wait 10 secs in case of auto-boot...)\n\r ");
     for(i=0;i<10;i++){
       time = DELAY_LOAD_VALUE;
       MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)".");
@@ -203,7 +206,6 @@ int main()
     */
     FLASH_init(4);
     FLASH_global_unprotect();
-    FLASH_erase_4k_block(SPI_WRITE_ADDR_BASE);
     /*--------------------------------------------------------------------------
      * Check SPI Flash part manufacturer and device ID.
     */
@@ -223,7 +225,7 @@ int main()
     status = MSS_SYS_get_design_version(design_version_mss);
     if(MSS_SYS_SUCCESS == status){
       MSS_UART_polled_tx_string(gp_my_uart,
-				(const uint8_t*)"Design version (install in the fabric) : ");
+				(const uint8_t*)"Design version (installed in the fabric) : ");
       display_hex_values(design_version_mss, sizeof(design_version_mss));
       MSS_UART_polled_tx_string(gp_my_uart,
 				(const uint8_t*)"\r\n");
@@ -241,32 +243,52 @@ int main()
     */
     FLASH_read(SPI_DATA_ADDR + VERSION_ID_ADDR -1, design_version_spi, 2);
     MSS_UART_polled_tx_string(gp_my_uart,
-			      (const uint8_t*)"Design version (install in the SPI Flash) : ");
+			      (const uint8_t*)"Design version (installed in the SPI Flash) : ");
     display_hex_values(design_version_spi, sizeof(design_version_spi));
     MSS_UART_polled_tx_string(gp_my_uart,
 			      (const uint8_t*)"\r\n");
 
 
     /*----------------------------------------------------------------------------
-     * write this information in the SPI Flash
-     */
-    FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_OLD_ADDR, design_version_mss, sizeof(design_version_mss));
-    FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_SPI_ADDR, design_version_spi, sizeof(design_version_spi));
-    
-    /*----------------------------------------------------------------------------
-     * judge whether the programming will be executed or not....
+     * retrieve the previous programming results 
     */
-    if(design_version_mss[0]==design_version_spi[0]){
-      MSS_UART_polled_tx_string(gp_my_uart,
-    					  (const uint8_t*)"Version match!! No programming.");
-      do_programming = 0;
-    }else{
-      do_programming = 1;
-    }
+    FLASH_read(SPI_WRITE_ADDR_BASE + RESULT_VERIFY -1, previous_prog_results, 2);
+    MSS_UART_polled_tx_string(gp_my_uart,
+			      (const uint8_t*)"Previous Programming Results (Verified or not?) ");
+    display_hex_values(previous_prog_results, sizeof(previous_prog_results));
+    MSS_UART_polled_tx_string(gp_my_uart,
+			      (const uint8_t*)"\r\n");
 
     if(manual_boot==0){
-      if(do_programming==1){
+      /*----------------------------------------------------------------------------
+       * judge whether the programming will be executed or not....
+       */
+      if(design_version_mss[0]==design_version_spi[0] && 
+	 previous_prog_results[0] == 0x0 ){
+	MSS_UART_polled_tx_string(gp_my_uart,
+				  (const uint8_t*)"Version match and already verified at the last programming!! No ISP Programming \r\n");
+	do_programming = 0;
+      }else{
+	if(design_version_mss[0]!=design_version_spi[0]){
+	  MSS_UART_polled_tx_string(gp_my_uart,
+				    (const uint8_t*)"Version doesn't match. Do ISP programming!! \r\n");
+	}
+	if(previous_prog_results[0] != 0x0){
+	  MSS_UART_polled_tx_string(gp_my_uart,
+				    (const uint8_t*)"Last Programming was not verified. Do ISP programming!! \r\n");
+	}
 
+	do_programming = 1;
+	
+	FLASH_erase_4k_block(SPI_WRITE_ADDR_BASE); ///erase the previous results of the programming
+	/*----------------------------------------------------------------------------
+	 * write this information in the SPI Flash
+	 */
+	FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_OLD_ADDR, design_version_mss, sizeof(design_version_mss));
+	FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_SPI_ADDR, design_version_spi, sizeof(design_version_spi));
+      }
+      
+      if(do_programming==1){
 	/* TEST */
 	MSS_SYS_init(sys_services_event_handler);
 	MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r Authenticate... \n\r ");
@@ -274,6 +296,8 @@ int main()
 	g_src_image_target_address = SPI_DATA_ADDR;
 	MSS_SYS_start_isp(MSS_SYS_PROG_AUTHENTICATE,page_read_handler,isp_completion_handler);
 	while(g_isp_operation_busy){;}
+	g_result[0] = g_error_flag;
+	FLASH_program(SPI_WRITE_ADDR_BASE+RESULT_AUTHENTICATION, g_result, sizeof(g_result));
 	if(g_error_flag == MSS_SYS_SUCCESS){
 	  MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r ISP Authentication completed successfully \n\r ");
 	  MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r Continuing with ISP Programming... \n\r ");
@@ -286,6 +310,8 @@ int main()
 	  g_src_image_target_address = SPI_DATA_ADDR;
 	  MSS_SYS_start_isp(MSS_SYS_PROG_PROGRAM,page_read_handler,isp_completion_handler);
 	  while(g_isp_operation_busy){;}
+	  g_result[0] = g_error_flag;
+	  FLASH_program(SPI_WRITE_ADDR_BASE+RESULT_PROGRAMMING, g_result, sizeof(g_result));
 	  if(g_error_flag == MSS_SYS_SUCCESS){
 	    MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r ISP programming completed successfully \n\r ");	    
 	    MSS_SYS_init(sys_services_event_handler);
@@ -296,6 +322,8 @@ int main()
 	    g_src_image_target_address = SPI_DATA_ADDR;
 	    MSS_SYS_start_isp(MSS_SYS_PROG_VERIFY,page_read_handler,isp_completion_handler);	  
 	    while(g_isp_operation_busy){;}
+	    g_result[0] = g_error_flag;
+	    FLASH_program(SPI_WRITE_ADDR_BASE+RESULT_VERIFY, g_result, sizeof(g_result));
 	    if(g_error_flag == MSS_SYS_SUCCESS){
 	      MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r ISP verifyng completed successfully \n\r ");
 	      
@@ -305,7 +333,7 @@ int main()
 	      status = MSS_SYS_get_design_version(design_version_mss_new);
 	      if(MSS_SYS_SUCCESS == status){
 		MSS_UART_polled_tx_string(gp_my_uart,
-					  (const uint8_t*)"Design version Newly install in the fabric : ");
+					  (const uint8_t*)"Design version Newly installed in the fabric : ");
 		display_hex_values(design_version_mss_new, sizeof(design_version_mss_new));
 		MSS_UART_polled_tx_string(gp_my_uart,
 					  (const uint8_t*)"\r\n");
@@ -320,18 +348,22 @@ int main()
 	      	      
 	      ///// Flash write the programming results 
 	      FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_NEW_ADDR,design_version_mss_new,sizeof(design_version_mss_new)); 
+
+	      ///// check the clock setting after FF is over 
 	      clock_setting[1] = SYSREG->MSSDDR_FACC1_CR;
 	      MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r reading MSSDDR_FACC1_CR register ... \n\r ");
 	      display_hex_values(clock_setting, sizeof(clock_setting));
 	      MSS_UART_polled_tx_string(gp_my_uart,
 					(const uint8_t*)"\r\n");
 
+	      ///// switch back to the original clock settings
 	      MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)" \n\r write original value in MSSDDR_FACC1_CR ... \n\r ");
 	      delay(DELAY_LOAD_VALUE);
 	      SYSREG->MSSDDR_FACC1_CR = clock_setting[0];
 	      delay(DELAY_LOAD_VALUE);
 	      clock_setting[1] = SYSREG->MSSDDR_FACC1_CR;
 	      
+	      ///// verify the MSSDDR_FACC1_CR register 
 	      MSS_UART_init(gp_my_uart,
 			    MSS_UART_115200_BAUD,
 			    MSS_UART_DATA_8_BITS | MSS_UART_NO_PARITY | MSS_UART_ONE_STOP_BIT);
@@ -357,8 +389,8 @@ int main()
 	      MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)"\n\r");
 	      
 	      /// do reset 
-	      delay(DELAY_LOAD_VALUE);
-	      AIRCR->AIRCR_Bits = 0x05FA0004u;
+	      //delay(DELAY_LOAD_VALUE);
+	      //AIRCR->AIRCR_Bits = 0x05FA0004u;
 	    }
 	  }else{
 	    uint8_t value_text[50];
@@ -368,8 +400,8 @@ int main()
 	    MSS_UART_polled_tx(gp_my_uart, value_text, textsize);
 	    MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)"\n\r");
 	    /// do reset 
-	    delay(DELAY_LOAD_VALUE);
-	    AIRCR->AIRCR_Bits = 0x05FA0004u;
+	    //delay(DELAY_LOAD_VALUE);
+	    //AIRCR->AIRCR_Bits = 0x05FA0004u;
 	  }
 	}else{
 	  uint8_t value_text[50];
@@ -379,8 +411,8 @@ int main()
 	  MSS_UART_polled_tx(gp_my_uart, value_text, textsize);
 	  MSS_UART_polled_tx_string(gp_my_uart, (uint8_t*)"\n\r");
 	  /// do reset 
-	  delay(DELAY_LOAD_VALUE);
-	  AIRCR->AIRCR_Bits = 0x05FA0004u;
+	  //delay(DELAY_LOAD_VALUE);
+	  //AIRCR->AIRCR_Bits = 0x05FA0004u;
 	}
       }else{ //no programming. do verify???
 	
@@ -404,12 +436,21 @@ int main()
 	  press_any_key();
 	  break;
 	case CMD_AUTHENTICATE:
+	  FLASH_erase_4k_block(SPI_WRITE_ADDR_BASE); ///erase the previous results of the programming
+	  /*----------------------------------------------------------------------------
+	   * write this information in the SPI Flash
+	   */
+	  FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_OLD_ADDR, design_version_mss, sizeof(design_version_mss));
+	  FLASH_program(SPI_WRITE_ADDR_BASE+VERSION_SPI_ADDR, design_version_spi, sizeof(design_version_spi));
+
 	  MSS_UART_polled_tx_string( gp_my_uart, (const uint8_t *)"\r\nPerforming authentication.  Please wait...\r\n");
 	  delay(DELAY_LOAD_VALUE);
 	  g_isp_operation_busy = 1;
 	  g_src_image_target_address = SPI_DATA_ADDR;
 	  MSS_SYS_start_isp(MSS_SYS_PROG_AUTHENTICATE, page_read_handler, isp_completion_handler);
 	  while(g_isp_operation_busy) {;}
+	  g_result[0] = g_error_flag;
+	  FLASH_program(SPI_WRITE_ADDR_BASE+RESULT_AUTHENTICATION, g_result, sizeof(g_result));
 	  press_any_key();
 	  break;
 	case CMD_PROGRAM:
@@ -419,6 +460,8 @@ int main()
 	  g_src_image_target_address = SPI_DATA_ADDR;
 	  MSS_SYS_start_isp(MSS_SYS_PROG_PROGRAM, page_read_handler, isp_completion_handler);
 	  while(g_isp_operation_busy) {;}
+	  g_result[0] = g_error_flag;
+	  FLASH_program(SPI_WRITE_ADDR_BASE+RESULT_PROGRAMMING, g_result, sizeof(g_result));
 	  delay(DELAY_LOAD_VALUE);
 	  press_any_key();
 	  break;
@@ -429,14 +472,14 @@ int main()
 	  g_src_image_target_address = SPI_DATA_ADDR;
 	  MSS_SYS_start_isp(MSS_SYS_PROG_VERIFY, page_read_handler, isp_completion_handler);
 	  while(g_isp_operation_busy) {;}
-
-
+	  g_result[0] = g_error_flag;
+	  FLASH_program(SPI_WRITE_ADDR_BASE+RESULT_VERIFY, g_result, sizeof(g_result));
 
 	  MSS_SYS_init(sys_services_event_handler);
 	  status = MSS_SYS_get_design_version(design_version_mss_new);
 	  if(MSS_SYS_SUCCESS == status){
 	    MSS_UART_polled_tx_string(gp_my_uart,
-				      (const uint8_t*)"Design version Newly install in the fabric : ");
+				      (const uint8_t*)"Design version Newly installed in the fabric : ");
 	    display_hex_values(design_version_mss_new, sizeof(design_version_mss_new));
 	    MSS_UART_polled_tx_string(gp_my_uart,
 				      (const uint8_t*)"\r\n");

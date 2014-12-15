@@ -331,13 +331,13 @@ END GROUP
                 0x000002ae                mscc_post_hw_cfg_init
                 0x000002f0                . = ALIGN (0x4)
 
-.text           0x000002f0     0xb070
+.text           0x000002f0     0xb278
  CREATE_OBJECT_SYMBOLS
                 0x000002f0                __text_load = LOADADDR (.text)
                 0x000002f0                __text_start = .
  *(.text .text.* .gnu.linkonce.t.*)
  .text          0x000002f0       0x30 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
- .text          0x00000320      0xf40 ./main.o
+ .text          0x00000320     0x1070 ./main.o
                 0x00000320                int_to_hex_int
                 0x00000394                delay
                 0x0000047c                dump_spi_image
@@ -347,282 +347,282 @@ END GROUP
                 0x000007b8                spi_flash_bootloader
                 0x00000838                isp_completion_handler
                 0x00000938                main
-                0x000011bc                page_read_handler
- .text          0x00001260     0x149c ./drivers/mss_uart/mss_uart.o
-                0x00001260                MSS_UART_polled_tx
-                0x0000130c                MSS_UART_polled_tx_string
-                0x0000139c                MSS_UART_irq_tx
-                0x00001430                MSS_UART_tx_complete
-                0x00001468                MSS_UART_get_rx
-                0x000014dc                MSS_UART_enable_irq
-                0x00001548                MSS_UART_disable_irq
-                0x000015b4                MSS_UART_set_rx_handler
-                0x00001638                MSS_UART_set_loopback
-                0x000016d0                MSS_UART_set_rxstatus_handler
-                0x0000173c                MSS_UART_set_tx_handler
-                0x000017b4                MSS_UART_set_modemstatus_handler
-                0x00001820                MSS_UART_fill_tx_fifo
-                0x000018ac                MSS_UART_get_rx_status
-                0x000018dc                MSS_UART_get_modem_status
-                0x00001900                MSS_UART_get_tx_status
-                0x00001930                MSS_UART_set_break
-                0x00001968                MSS_UART_clear_break
-                0x000019a0                MSS_UART_set_pidpei_handler
-                0x00001a0c                MSS_UART_set_linbreak_handler
-                0x00001a78                MSS_UART_set_linsync_handler
-                0x00001ae4                MSS_UART_set_nack_handler
-                0x00001b4c                MSS_UART_set_rx_timeout_handler
-                0x00001bb4                MSS_UART_enable_half_duplex
-                0x00001bec                MSS_UART_disable_half_duplex
-                0x00001c24                MSS_UART_set_rx_endian
-                0x00001c7c                MSS_UART_set_tx_endian
-                0x00001cd8                MSS_UART_set_filter_length
-                0x00001d00                MSS_UART_enable_afm
-                0x00001d38                MSS_UART_disable_afm
-                0x00001d70                MSS_UART_enable_afclear
-                0x00001da8                MSS_UART_disable_afclear
-                0x00001de0                MSS_UART_enable_rx_timeout
-                0x00001e20                MSS_UART_disable_rx_timeout
-                0x00001e58                MSS_UART_enable_tx_time_guard
-                0x00001e98                MSS_UART_disable_tx_time_guard
-                0x00001ed0                MSS_UART_set_address
-                0x00001ef4                MSS_UART_set_ready_mode
-                0x00001f50                MSS_UART_set_usart_mode
-                0x000020e4                UART1_IRQHandler
-                0x00002104                UART0_IRQHandler
-                0x000024e0                MSS_UART_smartcard_init
-                0x0000254c                MSS_UART_irda_init
-                0x00002644                MSS_UART_lin_init
-                0x0000269c                MSS_UART_init
- .text          0x000026fc      0x83c ./drivers/mss_sys_services/mss_comblk.o
-                0x000026fc                MSS_COMBLK_init
-                0x000027bc                MSS_COMBLK_send_cmd_with_ptr
-                0x00002874                MSS_COMBLK_send_paged_cmd
-                0x000029b8                MSS_COMBLK_send_cmd
-                0x00002b20                ComBlk_IRQHandler
- .text          0x00002f38     0x1180 ./drivers/mss_sys_services/mss_sys_services.o
-                0x00003058                MSS_SYS_clear_mesh_short
-                0x000030d8                MSS_SYS_clear_lock_parity
-                0x00003158                MSS_SYS_disable_puf_power_down
-                0x000031d8                MSS_SYS_enable_puf_power_down
-                0x00003258                MSS_SYS_stop_clock_monitor
-                0x000032d4                MSS_SYS_start_clock_monitor
-                0x00003358                MSS_SYS_check_digest
-                0x000033dc                MSS_SYS_initiate_iap
-                0x000034e8                MSS_SYS_zeroize_device
-                0x00003544                MSS_SYS_nrbg_uninstantiate
-                0x000035bc                MSS_SYS_nrbg_self_test
-                0x00003634                MSS_SYS_nrbg_reset
-                0x000036b4                MSS_SYS_ecc_get_base_point
-                0x00003750                MSS_SYS_ecc_point_addition
-                0x000037c0                MSS_SYS_ecc_point_multiplication
-                0x00003830                MSS_SYS_puf_get_random_seed
-                0x00003860                MSS_SYS_puf_fetch_ecc_public_key
-                0x00003890                MSS_SYS_puf_import_keycodes
-                0x000038c4                MSS_SYS_puf_export_keycodes
-                0x000038f8                MSS_SYS_puf_fetch_key
-                0x0000392c                MSS_SYS_puf_delete_key
-                0x0000394c                MSS_SYS_puf_enroll_key
-                0x000039c0                MSS_SYS_puf_get_number_of_keys
-                0x000039f8                MSS_SYS_puf_delete_activation_code
-                0x00003a14                MSS_SYS_puf_create_activation_code
-                0x00003a30                MSS_SYS_nrbg_reseed
-                0x00003a68                MSS_SYS_nrbg_generate
-                0x00003acc                MSS_SYS_nrbg_instantiate
-                0x00003b20                MSS_SYS_challenge_response
-                0x00003b60                MSS_SYS_key_tree
-                0x00003ba8                MSS_SYS_hmac
-                0x00003c30                MSS_SYS_sha256
-                0x00003ca4                MSS_SYS_256bit_aes
-                0x00003d30                MSS_SYS_128bit_aes
-                0x00003dbc                MSS_SYS_get_secondary_device_certificate
-                0x00003dd0                MSS_SYS_get_device_certificate
-                0x00003de4                MSS_SYS_get_design_version
-                0x00003df8                MSS_SYS_get_user_code
-                0x00003e0c                MSS_SYS_get_serial_number
-                0x00003e20                MSS_SYS_start_isp
-                0x00003ed8                MSS_SYS_flash_freeze
-                0x0000408c                MSS_SYS_init
- .text          0x000040b8      0x6c4 ./drivers/mss_spi/mss_spi.o
-                0x000040b8                MSS_SPI_init
-                0x00004200                MSS_SPI_configure_slave_mode
-                0x0000424c                MSS_SPI_configure_master_mode
-                0x00004290                MSS_SPI_set_slave_select
-                0x000042d8                MSS_SPI_clear_slave_select
-                0x00004300                MSS_SPI_transfer_frame
-                0x00004334                MSS_SPI_transfer_block
-                0x00004434                MSS_SPI_set_frame_rx_handler
-                0x0000447c                MSS_SPI_set_slave_tx_frame
-                0x000044c8                MSS_SPI_set_slave_block_buffers
-                0x0000457c                MSS_SPI_set_cmd_handler
-                0x0000458c                MSS_SPI_set_cmd_response
-                0x000045d8                MSS_SPI_enable
-                0x000045e4                MSS_SPI_disable
-                0x000045f0                MSS_SPI_set_transfer_byte_count
-                0x0000460c                MSS_SPI_tx_done
-                0x0000473c                SPI0_IRQHandler
-                0x0000475c                SPI1_IRQHandler
- .text          0x0000477c      0x45c ./drivers/at25df641/at25df641.o
-                0x0000477c                FLASH_get_status
-                0x000047e4                FLASH_erase_4k_block
-                0x00004850                FLASH_chip_erase
-                0x000048ac                FLASH_global_unprotect
-                0x00004908                FLASH_read
-                0x0000496c                FLASH_read_device_id
-                0x000049b8                write_cmd_data
-                0x00004a70                FLASH_program
-                0x00004bac                FLASH_init
- .text          0x00004bd8      0x3bc ./CMSIS/system_m2sxxx.o
-                0x00004bd8                SystemCoreClockUpdate
-                0x00004cfc                SystemCoreClockHardUpdate
-                0x00004e90                DDRInit
-                0x00004ef8                SystemInit
- .text          0x00004f94       0xd4 ./CMSIS/startup_gcc/newlib_stubs.o
-                0x00004f94                _close
-                0x00004f9c                _exit
-                0x00004fa0                _fstat
-                0x00004fac                _getpid
-                0x00004fb0                _isatty
-                0x00004fb4                _lseek
-                0x00004fb8                _open
-                0x00004fc0                _read
-                0x00004fc4                _write_r
-                0x00004fc8                _sbrk
-                0x00004ff4                _stat
-                0x00005000                _times
-                0x00005008                _wait
-                0x00005018                _unlink
-                0x00005028                _link
-                0x00005038                _kill
-                0x00005048                _fork
-                0x00005058                _execve
- .text          0x00005068        0xc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-errno.o)
-                0x00005068                __errno
- .text          0x00005074       0x50 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-init.o)
-                0x00005074                __libc_init_array
- .text          0x000050c4      0x190 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
-                0x000050c4                memcpy
- .text          0x00005254       0xdc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-snprintf.o)
-                0x00005254                snprintf
-                0x000052c8                _snprintf_r
- .text          0x00005330     0x15a8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-svfprintf.o)
-                0x0000544c                _svfprintf_r
- .text          0x000068d8      0xfb8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-dtoa.o)
-                0x000069f8                _dtoa_r
- .text          0x00007890      0x268 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-freer.o)
-                0x00007890                _malloc_trim_r
-                0x00007938                _free_r
- .text          0x00007af8       0x74 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-locale.o)
-                0x00007af8                __locale_charset
-                0x00007b04                _localeconv_r
-                0x00007b0c                localeconv
-                0x00007b14                _setlocale_r
-                0x00007b5c                setlocale
- .text          0x00007b6c       0x20 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-malloc.o)
-                0x00007b6c                free
-                0x00007b7c                malloc
- .text          0x00007b8c      0x5a4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mallocr.o)
-                0x00007b8c                _malloc_r
- .text          0x00008130       0x74 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memchr.o)
-                0x00008130                memchr
- .text          0x000081a4       0xb8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memmove.o)
-                0x000081a4                memmove
- .text          0x0000825c        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mlock.o)
-                0x0000825c                __malloc_lock
-                0x00008260                __malloc_unlock
- .text          0x00008264      0x958 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mprec.o)
-                0x00008264                __hi0bits
-                0x000082a4                __lo0bits
-                0x00008308                __mcmp
-                0x00008348                __ulp
-                0x00008394                __b2d
-                0x0000843c                __ratio
-                0x0000849c                _mprec_log10
-                0x000084d4                __copybits
-                0x00008524                __any_on
-                0x0000857c                _Bfree
-                0x000085b4                _Balloc
-                0x00008620                __d2b
-                0x000086f0                __mdiff
-                0x000087e8                __lshift
-                0x000088a4                __multiply
-                0x000089d8                __i2b
-                0x000089ec                __multadd
-                0x00008a74                __pow5mult
-                0x00008b20                __s2b
- .text          0x00008bbc      0x3b4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-reallocr.o)
-                0x00008bbc                _realloc_r
- .text          0x00008f70       0x24 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-s_isinfd.o)
-                0x00008f70                __isinfd
- .text          0x00008f94       0x1c c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-s_isnand.o)
-                0x00008f94                __isnand
- .text          0x00008fb0       0x28 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-sbrkr.o)
-                0x00008fb0                _sbrk_r
- .text          0x00008fd8      0x1dc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-strcmp.o)
-                0x00008fd8                strcmp
- .text          0x000091b4       0x60 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-strlen.o)
-                0x000091b4                strlen
- .text          0x00009214       0x5c c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-callocr.o)
-                0x00009214                _calloc_r
- .text          0x00009270       0xd4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memset.o)
-                0x00009270                memset
- *fill*         0x00009344        0x4 00
- .text          0x00009348      0x278 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_udivsi3.o)
-                0x00009348                __aeabi_uidiv
-                0x00009348                __udivsi3
-                0x000095a4                __aeabi_uidivmod
- .text          0x000095c0        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_dvmd_tls.o)
-                0x000095c0                __aeabi_idiv0
-                0x000095c0                __aeabi_ldiv0
- .text          0x000095c4      0x370 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
-                0x000095c4                __aeabi_drsub
-                0x000095cc                __aeabi_dsub
-                0x000095cc                __subdf3
-                0x000095d0                __aeabi_dadd
-                0x000095d0                __adddf3
-                0x00009848                __floatunsidf
-                0x00009848                __aeabi_ui2d
-                0x00009868                __floatsidf
-                0x00009868                __aeabi_i2d
-                0x0000988c                __aeabi_f2d
-                0x0000988c                __extendsfdf2
-                0x000098c8                __floatundidf
-                0x000098c8                __aeabi_ul2d
-                0x000098d8                __floatdidf
-                0x000098d8                __aeabi_l2d
- .text          0x00009934      0x424 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
-                0x00009934                __aeabi_dmul
-                0x00009934                __muldf3
-                0x00009b88                __divdf3
-                0x00009b88                __aeabi_ddiv
- .text          0x00009d58      0x110 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_cmpdf2.o)
-                0x00009d58                __gtdf2
-                0x00009d58                __gedf2
-                0x00009d60                __ltdf2
-                0x00009d60                __ledf2
-                0x00009d68                __nedf2
-                0x00009d68                __eqdf2
-                0x00009d68                __cmpdf2
-                0x00009de4                __aeabi_cdrcmple
-                0x00009df4                __aeabi_cdcmpeq
-                0x00009df4                __aeabi_cdcmple
-                0x00009e04                __aeabi_dcmpeq
-                0x00009e18                __aeabi_dcmplt
-                0x00009e2c                __aeabi_dcmple
-                0x00009e40                __aeabi_dcmpge
-                0x00009e54                __aeabi_dcmpgt
- .text          0x00009e68       0x50 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
-                0x00009e68                __aeabi_d2iz
-                0x00009e68                __fixdfsi
- .text          0x00009eb8       0x2c c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_aeabi_uldivmod.o)
-                0x00009eb8                __aeabi_uldivmod
- .text          0x00009ee4       0x58 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(bpabi.o)
-                0x00009ee4                __gnu_uldivmod_helper
-                0x00009f10                __gnu_ldivmod_helper
- .text          0x00009f3c      0x364 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_divdi3.o)
-                0x00009f3c                __divdi3
- .text          0x0000a2a0      0x300 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_udivdi3.o)
-                0x0000a2a0                __udivdi3
+                0x000012ec                page_read_handler
+ .text          0x00001390     0x149c ./drivers/mss_uart/mss_uart.o
+                0x00001390                MSS_UART_polled_tx
+                0x0000143c                MSS_UART_polled_tx_string
+                0x000014cc                MSS_UART_irq_tx
+                0x00001560                MSS_UART_tx_complete
+                0x00001598                MSS_UART_get_rx
+                0x0000160c                MSS_UART_enable_irq
+                0x00001678                MSS_UART_disable_irq
+                0x000016e4                MSS_UART_set_rx_handler
+                0x00001768                MSS_UART_set_loopback
+                0x00001800                MSS_UART_set_rxstatus_handler
+                0x0000186c                MSS_UART_set_tx_handler
+                0x000018e4                MSS_UART_set_modemstatus_handler
+                0x00001950                MSS_UART_fill_tx_fifo
+                0x000019dc                MSS_UART_get_rx_status
+                0x00001a0c                MSS_UART_get_modem_status
+                0x00001a30                MSS_UART_get_tx_status
+                0x00001a60                MSS_UART_set_break
+                0x00001a98                MSS_UART_clear_break
+                0x00001ad0                MSS_UART_set_pidpei_handler
+                0x00001b3c                MSS_UART_set_linbreak_handler
+                0x00001ba8                MSS_UART_set_linsync_handler
+                0x00001c14                MSS_UART_set_nack_handler
+                0x00001c7c                MSS_UART_set_rx_timeout_handler
+                0x00001ce4                MSS_UART_enable_half_duplex
+                0x00001d1c                MSS_UART_disable_half_duplex
+                0x00001d54                MSS_UART_set_rx_endian
+                0x00001dac                MSS_UART_set_tx_endian
+                0x00001e08                MSS_UART_set_filter_length
+                0x00001e30                MSS_UART_enable_afm
+                0x00001e68                MSS_UART_disable_afm
+                0x00001ea0                MSS_UART_enable_afclear
+                0x00001ed8                MSS_UART_disable_afclear
+                0x00001f10                MSS_UART_enable_rx_timeout
+                0x00001f50                MSS_UART_disable_rx_timeout
+                0x00001f88                MSS_UART_enable_tx_time_guard
+                0x00001fc8                MSS_UART_disable_tx_time_guard
+                0x00002000                MSS_UART_set_address
+                0x00002024                MSS_UART_set_ready_mode
+                0x00002080                MSS_UART_set_usart_mode
+                0x00002214                UART1_IRQHandler
+                0x00002234                UART0_IRQHandler
+                0x00002610                MSS_UART_smartcard_init
+                0x0000267c                MSS_UART_irda_init
+                0x00002774                MSS_UART_lin_init
+                0x000027cc                MSS_UART_init
+ .text          0x0000282c      0x83c ./drivers/mss_sys_services/mss_comblk.o
+                0x0000282c                MSS_COMBLK_init
+                0x000028ec                MSS_COMBLK_send_cmd_with_ptr
+                0x000029a4                MSS_COMBLK_send_paged_cmd
+                0x00002ae8                MSS_COMBLK_send_cmd
+                0x00002c50                ComBlk_IRQHandler
+ .text          0x00003068     0x1180 ./drivers/mss_sys_services/mss_sys_services.o
+                0x00003188                MSS_SYS_clear_mesh_short
+                0x00003208                MSS_SYS_clear_lock_parity
+                0x00003288                MSS_SYS_disable_puf_power_down
+                0x00003308                MSS_SYS_enable_puf_power_down
+                0x00003388                MSS_SYS_stop_clock_monitor
+                0x00003404                MSS_SYS_start_clock_monitor
+                0x00003488                MSS_SYS_check_digest
+                0x0000350c                MSS_SYS_initiate_iap
+                0x00003618                MSS_SYS_zeroize_device
+                0x00003674                MSS_SYS_nrbg_uninstantiate
+                0x000036ec                MSS_SYS_nrbg_self_test
+                0x00003764                MSS_SYS_nrbg_reset
+                0x000037e4                MSS_SYS_ecc_get_base_point
+                0x00003880                MSS_SYS_ecc_point_addition
+                0x000038f0                MSS_SYS_ecc_point_multiplication
+                0x00003960                MSS_SYS_puf_get_random_seed
+                0x00003990                MSS_SYS_puf_fetch_ecc_public_key
+                0x000039c0                MSS_SYS_puf_import_keycodes
+                0x000039f4                MSS_SYS_puf_export_keycodes
+                0x00003a28                MSS_SYS_puf_fetch_key
+                0x00003a5c                MSS_SYS_puf_delete_key
+                0x00003a7c                MSS_SYS_puf_enroll_key
+                0x00003af0                MSS_SYS_puf_get_number_of_keys
+                0x00003b28                MSS_SYS_puf_delete_activation_code
+                0x00003b44                MSS_SYS_puf_create_activation_code
+                0x00003b60                MSS_SYS_nrbg_reseed
+                0x00003b98                MSS_SYS_nrbg_generate
+                0x00003bfc                MSS_SYS_nrbg_instantiate
+                0x00003c50                MSS_SYS_challenge_response
+                0x00003c90                MSS_SYS_key_tree
+                0x00003cd8                MSS_SYS_hmac
+                0x00003d60                MSS_SYS_sha256
+                0x00003dd4                MSS_SYS_256bit_aes
+                0x00003e60                MSS_SYS_128bit_aes
+                0x00003eec                MSS_SYS_get_secondary_device_certificate
+                0x00003f00                MSS_SYS_get_device_certificate
+                0x00003f14                MSS_SYS_get_design_version
+                0x00003f28                MSS_SYS_get_user_code
+                0x00003f3c                MSS_SYS_get_serial_number
+                0x00003f50                MSS_SYS_start_isp
+                0x00004008                MSS_SYS_flash_freeze
+                0x000041bc                MSS_SYS_init
+ .text          0x000041e8      0x6c4 ./drivers/mss_spi/mss_spi.o
+                0x000041e8                MSS_SPI_init
+                0x00004330                MSS_SPI_configure_slave_mode
+                0x0000437c                MSS_SPI_configure_master_mode
+                0x000043c0                MSS_SPI_set_slave_select
+                0x00004408                MSS_SPI_clear_slave_select
+                0x00004430                MSS_SPI_transfer_frame
+                0x00004464                MSS_SPI_transfer_block
+                0x00004564                MSS_SPI_set_frame_rx_handler
+                0x000045ac                MSS_SPI_set_slave_tx_frame
+                0x000045f8                MSS_SPI_set_slave_block_buffers
+                0x000046ac                MSS_SPI_set_cmd_handler
+                0x000046bc                MSS_SPI_set_cmd_response
+                0x00004708                MSS_SPI_enable
+                0x00004714                MSS_SPI_disable
+                0x00004720                MSS_SPI_set_transfer_byte_count
+                0x0000473c                MSS_SPI_tx_done
+                0x0000486c                SPI0_IRQHandler
+                0x0000488c                SPI1_IRQHandler
+ .text          0x000048ac      0x45c ./drivers/at25df641/at25df641.o
+                0x000048ac                FLASH_get_status
+                0x00004914                FLASH_erase_4k_block
+                0x00004980                FLASH_chip_erase
+                0x000049dc                FLASH_global_unprotect
+                0x00004a38                FLASH_read
+                0x00004a9c                FLASH_read_device_id
+                0x00004ae8                write_cmd_data
+                0x00004ba0                FLASH_program
+                0x00004cdc                FLASH_init
+ .text          0x00004d08      0x3bc ./CMSIS/system_m2sxxx.o
+                0x00004d08                SystemCoreClockUpdate
+                0x00004e2c                SystemCoreClockHardUpdate
+                0x00004fc0                DDRInit
+                0x00005028                SystemInit
+ .text          0x000050c4       0xd4 ./CMSIS/startup_gcc/newlib_stubs.o
+                0x000050c4                _close
+                0x000050cc                _exit
+                0x000050d0                _fstat
+                0x000050dc                _getpid
+                0x000050e0                _isatty
+                0x000050e4                _lseek
+                0x000050e8                _open
+                0x000050f0                _read
+                0x000050f4                _write_r
+                0x000050f8                _sbrk
+                0x00005124                _stat
+                0x00005130                _times
+                0x00005138                _wait
+                0x00005148                _unlink
+                0x00005158                _link
+                0x00005168                _kill
+                0x00005178                _fork
+                0x00005188                _execve
+ .text          0x00005198        0xc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-errno.o)
+                0x00005198                __errno
+ .text          0x000051a4       0x50 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-init.o)
+                0x000051a4                __libc_init_array
+ .text          0x000051f4      0x190 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memcpy.o)
+                0x000051f4                memcpy
+ .text          0x00005384       0xdc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-snprintf.o)
+                0x00005384                snprintf
+                0x000053f8                _snprintf_r
+ .text          0x00005460     0x15a8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-svfprintf.o)
+                0x0000557c                _svfprintf_r
+ .text          0x00006a08      0xfb8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-dtoa.o)
+                0x00006b28                _dtoa_r
+ .text          0x000079c0      0x268 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-freer.o)
+                0x000079c0                _malloc_trim_r
+                0x00007a68                _free_r
+ .text          0x00007c28       0x74 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-locale.o)
+                0x00007c28                __locale_charset
+                0x00007c34                _localeconv_r
+                0x00007c3c                localeconv
+                0x00007c44                _setlocale_r
+                0x00007c8c                setlocale
+ .text          0x00007c9c       0x20 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-malloc.o)
+                0x00007c9c                free
+                0x00007cac                malloc
+ .text          0x00007cbc      0x5a4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mallocr.o)
+                0x00007cbc                _malloc_r
+ .text          0x00008260       0x74 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memchr.o)
+                0x00008260                memchr
+ .text          0x000082d4       0xb8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memmove.o)
+                0x000082d4                memmove
+ .text          0x0000838c        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mlock.o)
+                0x0000838c                __malloc_lock
+                0x00008390                __malloc_unlock
+ .text          0x00008394      0x958 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mprec.o)
+                0x00008394                __hi0bits
+                0x000083d4                __lo0bits
+                0x00008438                __mcmp
+                0x00008478                __ulp
+                0x000084c4                __b2d
+                0x0000856c                __ratio
+                0x000085cc                _mprec_log10
+                0x00008604                __copybits
+                0x00008654                __any_on
+                0x000086ac                _Bfree
+                0x000086e4                _Balloc
+                0x00008750                __d2b
+                0x00008820                __mdiff
+                0x00008918                __lshift
+                0x000089d4                __multiply
+                0x00008b08                __i2b
+                0x00008b1c                __multadd
+                0x00008ba4                __pow5mult
+                0x00008c50                __s2b
+ .text          0x00008cec      0x3b4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-reallocr.o)
+                0x00008cec                _realloc_r
+ .text          0x000090a0       0x24 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-s_isinfd.o)
+                0x000090a0                __isinfd
+ .text          0x000090c4       0x1c c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-s_isnand.o)
+                0x000090c4                __isnand
+ .text          0x000090e0       0x28 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-sbrkr.o)
+                0x000090e0                _sbrk_r
+ .text          0x00009108      0x1dc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-strcmp.o)
+                0x00009108                strcmp
+ .text          0x000092e4       0x60 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-strlen.o)
+                0x000092e4                strlen
+ .text          0x00009344       0x5c c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-callocr.o)
+                0x00009344                _calloc_r
+ .text          0x000093a0       0xd4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-memset.o)
+                0x000093a0                memset
+ *fill*         0x00009474        0x4 00
+ .text          0x00009478      0x278 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_udivsi3.o)
+                0x00009478                __aeabi_uidiv
+                0x00009478                __udivsi3
+                0x000096d4                __aeabi_uidivmod
+ .text          0x000096f0        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_dvmd_tls.o)
+                0x000096f0                __aeabi_idiv0
+                0x000096f0                __aeabi_ldiv0
+ .text          0x000096f4      0x370 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_addsubdf3.o)
+                0x000096f4                __aeabi_drsub
+                0x000096fc                __aeabi_dsub
+                0x000096fc                __subdf3
+                0x00009700                __aeabi_dadd
+                0x00009700                __adddf3
+                0x00009978                __floatunsidf
+                0x00009978                __aeabi_ui2d
+                0x00009998                __floatsidf
+                0x00009998                __aeabi_i2d
+                0x000099bc                __aeabi_f2d
+                0x000099bc                __extendsfdf2
+                0x000099f8                __floatundidf
+                0x000099f8                __aeabi_ul2d
+                0x00009a08                __floatdidf
+                0x00009a08                __aeabi_l2d
+ .text          0x00009a64      0x424 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_muldivdf3.o)
+                0x00009a64                __aeabi_dmul
+                0x00009a64                __muldf3
+                0x00009cb8                __divdf3
+                0x00009cb8                __aeabi_ddiv
+ .text          0x00009e88      0x110 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_cmpdf2.o)
+                0x00009e88                __gtdf2
+                0x00009e88                __gedf2
+                0x00009e90                __ltdf2
+                0x00009e90                __ledf2
+                0x00009e98                __nedf2
+                0x00009e98                __eqdf2
+                0x00009e98                __cmpdf2
+                0x00009f14                __aeabi_cdrcmple
+                0x00009f24                __aeabi_cdcmpeq
+                0x00009f24                __aeabi_cdcmple
+                0x00009f34                __aeabi_dcmpeq
+                0x00009f48                __aeabi_dcmplt
+                0x00009f5c                __aeabi_dcmple
+                0x00009f70                __aeabi_dcmpge
+                0x00009f84                __aeabi_dcmpgt
+ .text          0x00009f98       0x50 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_arm_fixdfsi.o)
+                0x00009f98                __aeabi_d2iz
+                0x00009f98                __fixdfsi
+ .text          0x00009fe8       0x2c c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_aeabi_uldivmod.o)
+                0x00009fe8                __aeabi_uldivmod
+ .text          0x0000a014       0x58 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(bpabi.o)
+                0x0000a014                __gnu_uldivmod_helper
+                0x0000a040                __gnu_ldivmod_helper
+ .text          0x0000a06c      0x364 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_divdi3.o)
+                0x0000a06c                __divdi3
+ .text          0x0000a3d0      0x300 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_udivdi3.o)
+                0x0000a3d0                __udivdi3
  *(.plt)
  *(.gnu.warning)
  *(.glue_7t)
@@ -631,7 +631,7 @@ END GROUP
  .glue_7        0x00000000        0x0 linker stubs
  *(.vfp11_veneer)
  .vfp11_veneer  0x00000000        0x0 linker stubs
-                0x0000a5a0                . = ALIGN (0x4)
+                0x0000a6d0                . = ALIGN (0x4)
  *crtbegin.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o) .ctors)
  *(SORT(.ctors.*))
@@ -641,83 +641,83 @@ END GROUP
  *(SORT(.dtors.*))
  *crtend.o(.dtors)
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x0000a5a0      0x1b8 ./main.o
-                0x0000a5a0                g_greeting_msg
-                0x0000a754                gp_my_uart
+ .rodata        0x0000a6d0      0x1b8 ./main.o
+                0x0000a6d0                g_greeting_msg
+                0x0000a884                gp_my_uart
  .rodata.str1.4
-                0x0000a758      0x803 ./main.o
-                                0x80c (size before relaxing)
- *fill*         0x0000af5b        0x1 00
- .rodata        0x0000af5c      0x110 ./drivers_config/sys_config/sys_config.o
-                0x0000af5c                g_m2s_mddr_addr
-                0x0000af60                g_m2s_mddr_subsys_config
- .rodata        0x0000b06c       0x60 ./drivers/mss_sys_services/mss_sys_services.o
+                0x0000a888      0x8db ./main.o
+                                0x8e4 (size before relaxing)
+ *fill*         0x0000b163        0x1 00
+ .rodata        0x0000b164      0x110 ./drivers_config/sys_config/sys_config.o
+                0x0000b164                g_m2s_mddr_addr
+                0x0000b168                g_m2s_mddr_subsys_config
+ .rodata        0x0000b274       0x60 ./drivers/mss_sys_services/mss_sys_services.o
  .rodata.str1.4
-                0x0000b0cc       0x89 ./drivers/mss_sys_services/mss_sys_services.o
+                0x0000b2d4       0x89 ./drivers/mss_sys_services/mss_sys_services.o
                                  0x8c (size before relaxing)
- *fill*         0x0000b155        0x3 00
- .rodata        0x0000b158        0x8 ./CMSIS/system_m2sxxx.o
+ *fill*         0x0000b35d        0x3 00
+ .rodata        0x0000b360        0x8 ./CMSIS/system_m2sxxx.o
  .rodata.str1.4
-                0x0000b160        0x2 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-impure.o)
+                0x0000b368        0x2 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-impure.o)
                                   0x4 (size before relaxing)
- *fill*         0x0000b162        0x2 00
- .rodata        0x0000b164       0x20 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-svfprintf.o)
+ *fill*         0x0000b36a        0x2 00
+ .rodata        0x0000b36c       0x20 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-svfprintf.o)
  .rodata.str1.4
-                0x0000b184       0x42 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-svfprintf.o)
+                0x0000b38c       0x42 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-svfprintf.o)
                                  0x44 (size before relaxing)
- *fill*         0x0000b1c6        0x2 00
+ *fill*         0x0000b3ce        0x2 00
  .rodata.str1.4
-                0x0000b1c8       0x10 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-dtoa.o)
+                0x0000b3d0       0x10 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-dtoa.o)
                                  0x14 (size before relaxing)
- .rodata        0x0000b1d8       0x34 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-locale.o)
+ .rodata        0x0000b3e0       0x34 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-locale.o)
  .rodata.str1.4
-                0x0000b20c        0xc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-locale.o)
+                0x0000b414        0xc c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-locale.o)
                                  0x18 (size before relaxing)
- .rodata        0x0000b218      0x128 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mprec.o)
-                0x0000b218                __mprec_tens
-                0x0000b2f0                __mprec_bigtens
-                0x0000b318                __mprec_tinytens
+ .rodata        0x0000b420      0x128 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mprec.o)
+                0x0000b420                __mprec_tens
+                0x0000b4f8                __mprec_bigtens
+                0x0000b520                __mprec_tinytens
  *(.ARM.extab* .gnu.linkonce.armextab.*)
  *(.gcc_except_table)
  *(.eh_frame_hdr)
  *(.eh_frame)
  *(.init)
- .init          0x0000b340        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
-                0x0000b340                _init
- .init          0x0000b344        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+ .init          0x0000b548        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+                0x0000b548                _init
+ .init          0x0000b54c        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
  *(.fini)
- .fini          0x0000b34c        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
-                0x0000b34c                _fini
- .fini          0x0000b350        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
-                0x0000b358                PROVIDE (__preinit_array_start, .)
+ .fini          0x0000b554        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crti.o
+                0x0000b554                _fini
+ .fini          0x0000b558        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtn.o
+                0x0000b560                PROVIDE (__preinit_array_start, .)
  *(.preinit_array)
-                0x0000b358                PROVIDE (__preinit_array_end, .)
-                0x0000b358                PROVIDE (__init_array_start, .)
+                0x0000b560                PROVIDE (__preinit_array_end, .)
+                0x0000b560                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array)
- .init_array    0x0000b358        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
-                0x0000b35c                PROVIDE (__init_array_end, .)
-                0x0000b35c                PROVIDE (__fini_array_start, .)
+ .init_array    0x0000b560        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+                0x0000b564                PROVIDE (__init_array_end, .)
+                0x0000b564                PROVIDE (__fini_array_start, .)
  *(.fini_array)
- .fini_array    0x0000b35c        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
+ .fini_array    0x0000b564        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
  *(SORT(.fini_array.*))
-                0x0000b360                PROVIDE (__fini_array_end, .)
-                0x0000b360                __exidx_start = .
+                0x0000b568                PROVIDE (__fini_array_end, .)
+                0x0000b568                __exidx_start = .
 
-.v4_bx          0x0000b360        0x0
+.v4_bx          0x0000b568        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.ARM.exidx      0x0000b360        0x8
+.ARM.exidx      0x0000b568        0x8
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
- .ARM.exidx     0x0000b360        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_divdi3.o)
- .ARM.exidx     0x0000b368        0x0 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_udivdi3.o)
+ .ARM.exidx     0x0000b568        0x8 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_divdi3.o)
+ .ARM.exidx     0x0000b570        0x0 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2\libgcc.a(_udivdi3.o)
                                   0x8 (size before relaxing)
-                0x0000b368                __exidx_end = .
-                0x0000b368                _etext = .
+                0x0000b570                __exidx_end = .
+                0x0000b570                _etext = .
 
-.data           0x20000000      0x538 load address 0x0000b368
-                0x0000b368                __data_load = LOADADDR (.data)
-                0x0000b368                _sidata = LOADADDR (.data)
+.data           0x20000000      0x538 load address 0x0000b570
+                0x0000b570                __data_load = LOADADDR (.data)
+                0x0000b570                _sidata = LOADADDR (.data)
                 0x20000000                __data_start = .
                 0x20000000                _sdata = .
  *(.jcr)
@@ -748,36 +748,37 @@ END GROUP
                 0x20000538                . = ALIGN (0x4)
                 0x20000538                _edata = .
 
-.bss            0x20000538      0x418 load address 0x0000b8a0
+.bss            0x20000538      0x418 load address 0x0000baa8
                 0x20000538                __bss_start__ = .
                 0x20000538                _sbss = .
  *(.shbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
  .bss           0x20000538        0x1 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/thumb2/crtbegin.o
  *fill*         0x20000539        0x3 00
- .bss           0x2000053c      0x20c ./main.o
-                0x20000744                MDDR_status
- .bss           0x20000748       0x2c ./drivers/mss_sys_services/mss_comblk.o
- .bss           0x20000774       0x24 ./drivers/mss_sys_services/mss_sys_services.o
-                0x20000784                g_isp_completion_handler
-                0x20000790                g_isp_page_read_handler
- .bss           0x20000798        0x8 ./CMSIS/startup_gcc/newlib_stubs.o
-                0x2000079c                __env
- .bss           0x200007a0       0x34 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mallocr.o)
-                0x200007a0                __malloc_top_pad
-                0x200007a4                __malloc_current_mallinfo
-                0x200007cc                __malloc_max_sbrked_mem
-                0x200007d0                __malloc_max_total_mem
+ .bss           0x2000053c      0x208 ./main.o
+                0x20000740                MDDR_status
+ .bss           0x20000744       0x2c ./drivers/mss_sys_services/mss_comblk.o
+ .bss           0x20000770       0x24 ./drivers/mss_sys_services/mss_sys_services.o
+                0x20000780                g_isp_completion_handler
+                0x2000078c                g_isp_page_read_handler
+ .bss           0x20000794        0x8 ./CMSIS/startup_gcc/newlib_stubs.o
+                0x20000798                __env
+ .bss           0x2000079c       0x34 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-mallocr.o)
+                0x2000079c                __malloc_top_pad
+                0x200007a0                __malloc_current_mallinfo
+                0x200007c8                __malloc_max_sbrked_mem
+                0x200007cc                __malloc_max_total_mem
  *(COMMON)
- COMMON         0x200007d4       0x80 ./drivers/mss_uart/mss_uart.o
-                0x200007d4                g_mss_uart1
-                0x20000814                g_mss_uart0
- COMMON         0x20000854       0xf8 ./drivers/mss_spi/mss_spi.o
-                0x20000854                g_mss_spi1
-                0x200008d0                g_mss_spi0
- COMMON         0x2000094c        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-reent.o)
-                0x2000094c                errno
+ COMMON         0x200007d0       0x80 ./drivers/mss_uart/mss_uart.o
+                0x200007d0                g_mss_uart1
+                0x20000810                g_mss_uart0
+ COMMON         0x20000850       0xf8 ./drivers/mss_spi/mss_spi.o
+                0x20000850                g_mss_spi1
+                0x200008cc                g_mss_spi0
+ COMMON         0x20000948        0x4 c:/microsemi/libero_v11.2/softconsole/sourcery-g++/bin/../lib/gcc/arm-none-eabi/4.4.1/../../../../arm-none-eabi/lib/thumb2\libc.a(lib_a-reent.o)
+                0x20000948                errno
                 0x20000950                . = ALIGN (0x8)
+ *fill*         0x2000094c        0x4 00
                 0x20000950                __bss_end__ = .
                 0x20000950                _end = .
                 0x20000950                __end = _end
